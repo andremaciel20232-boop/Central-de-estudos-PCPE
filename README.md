@@ -18,7 +18,7 @@ Banca Cebraspe. Prova objetiva e discursiva em **07/03/2027** (valor inicial em 
 ## Fotos
 - Topo do Painel: `img/painel.jpg`. Faixa lateral: `img/lateral.jpg`. Para trocar, substitua o arquivo mantendo o nome (otimizar antes: JPEG ou WebP, até 1600 px, de preferência abaixo de 200 KB). O véu escuro já está nos dois lugares; `tools/teste-navegador.js` mede o contraste do texto sobre a foto.
 - Foto de perfil: `img/perfil.png` (brasão da Polícia Civil de Pernambuco, fundo transparente); se faltar, aparece uma silhueta.
-- Minha Força & Inspiração: `foto1.jpg` a `foto4.jpg` na raiz (JPEG até 1200 px, sem metadados). Sem os arquivos a seção mostra um aviso.
+- Minha Força & Inspiração: 4 posições. O padrão são `foto1.jpg` a `foto4.jpg` na raiz (JPEG até 1200 px, sem metadados). Em **Editar fotos** a Izabela muda a ordem (setas) e troca qualquer foto por outra do aparelho; a nova é reduzida a 1200 px, guardada no banco de imagens do navegador (`preferencias.fotosInspiracao` guarda a ordem) e vai no backup. "Voltar às fotos originais" desfaz tudo. Foto indisponível aparece como "Sem foto".
 
 ## Fases do concurso (confirmadas no Edital nº 1/2026, retificado até o Edital nº 3)
 Agente de Polícia: provas objetivas (20 questões de Noções de Direito e 40 de Conhecimentos Específicos), prova discursiva (redação, com Atualidades, que só cai nela), exames médicos, prova de capacidade física, investigação social e avaliação psicológica (todas eliminatórias); depois, curso de formação (ACADEPOL). A prova oral é só do cargo de Delegado. O app não tem funções para essas fases.

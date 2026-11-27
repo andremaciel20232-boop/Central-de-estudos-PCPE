@@ -919,7 +919,16 @@
     .fi-asp { font-size: 44px; line-height: .6; font-weight: 800; color: var(--t-foco, var(--brand)); height: 20px; font-family: Georgia, serif; }
     .fi-frase { margin: 0; font-size: 17px; line-height: 1.5; font-style: italic; font-weight: 500; } .fi-ref { font-size: 13px; font-weight: 800; color: var(--t-foco, var(--brand)); }
     .fi-nova { justify-self: end; min-height: 44px; border-radius: 99px; border: 1px solid var(--border-color); background: var(--bg-panel); color: var(--t-foco, var(--brand)); display: inline-flex; align-items: center; gap: 8px; padding: 0 14px; font-weight: 800; font-size: 13px; cursor: pointer; } .fi-nova:hover { background: var(--bg-hover); } .fi-nova:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
-    .fi-semfoto { font-size: 12.5px; color: var(--text-secondary); margin: 0; }
+    .fi-cab { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .fi-ed, .fi-rest { min-height: 44px; padding: 0 14px; border-radius: 99px; border: 1px solid var(--border-color); background: var(--bg-panel); color: var(--text-primary); font-weight: 800; font-size: 12.5px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+    .fi-ed:hover, .fi-rest:hover { background: var(--bg-hover); } .fi-ed[aria-pressed="true"] { background: var(--btn-iniciar-bg); color: var(--btn-iniciar-fg); border-color: var(--btn-iniciar-bg); }
+    .fi-ed:focus-visible, .fi-rest:focus-visible, .fi-ctl button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+    .fi-ajuda { display: grid; gap: 8px; justify-items: start; } .fi-ajuda p { margin: 0; font-size: 12.5px; color: var(--text-secondary); }
+    .fi-item { display: grid; gap: 6px; min-width: 0; align-content: start; }
+    .fi-ctl { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; gap: 6px; }
+    .fi-ctl button { min-height: 44px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-panel); color: var(--text-primary); font-weight: 800; font-size: 12.5px; cursor: pointer; padding: 0; }
+    .fi-ctl button:hover:not(:disabled) { background: var(--bg-hover); } .fi-ctl button:disabled { opacity: .4; cursor: not-allowed; }
+    .fi-foto.vazio { cursor: default; display: grid; place-items: center; align-content: center; gap: 6px; text-align: center; color: var(--text-secondary); font-size: 12px; font-weight: 700; padding: 8px; } .fi-foto.vazio i { font-size: 22px; }
     @container fi (max-width: 559px) { .fi-faixa { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; } .fi-foto { aspect-ratio: 4 / 5; } }
     @container fi (min-width: 560px) { .fi-frase { font-size: 19px; } }
     #visualizador-print[data-sem-dados] .vz-dados { display: none; }
@@ -1043,14 +1052,16 @@
             </section>
 
             <section id="fi" class="fi" aria-label="Minha Força e Inspiração">
-              <h3 class="fi-t"><i class="fa-solid fa-heart" aria-hidden="true"></i> Minha Força &amp; Inspiração</h3>
-              <div class="fi-faixa" id="fi-faixa">
-                <button type="button" class="fi-foto" onclick="ampliarFoto(this)" aria-label="Ampliar a foto 1"><img src="foto1.jpg" alt="Inspiração 1"><span class="fi-lupa" aria-hidden="true"><i class="fa-solid fa-magnifying-glass-plus"></i></span></button>
-                <button type="button" class="fi-foto" onclick="ampliarFoto(this)" aria-label="Ampliar a foto 2"><img src="foto2.jpg" alt="Inspiração 2"><span class="fi-lupa" aria-hidden="true"><i class="fa-solid fa-magnifying-glass-plus"></i></span></button>
-                <button type="button" class="fi-foto" onclick="ampliarFoto(this)" aria-label="Ampliar a foto 3"><img src="foto3.jpg" alt="Inspiração 3"><span class="fi-lupa" aria-hidden="true"><i class="fa-solid fa-magnifying-glass-plus"></i></span></button>
-                <button type="button" class="fi-foto" onclick="ampliarFoto(this)" aria-label="Ampliar a foto 4"><img src="foto4.jpg" alt="Inspiração 4"><span class="fi-lupa" aria-hidden="true"><i class="fa-solid fa-magnifying-glass-plus"></i></span></button>
+              <div class="fi-cab">
+                <h3 class="fi-t"><i class="fa-solid fa-heart" aria-hidden="true"></i> Minha Força &amp; Inspiração</h3>
+                <button type="button" id="fi-editar" class="fi-ed" aria-pressed="false" aria-controls="fi-faixa fi-ajuda" onclick="alternarEdicaoFotos()"><i class="fa-solid fa-pen" aria-hidden="true"></i> <span>Editar fotos</span></button>
               </div>
-              <p class="fi-semfoto" id="fi-semfoto" hidden>As fotos não foram encontradas. Coloque foto1.jpg a foto4.jpg na pasta do site.</p>
+              <div class="fi-faixa" id="fi-faixa"></div>
+              <div id="fi-ajuda" class="fi-ajuda" hidden>
+                <p>Use as setas para mudar a posição ou toque em Trocar para escolher outra foto do aparelho. As fotos ficam só neste navegador e vão no backup.</p>
+                <button type="button" class="fi-rest" onclick="restaurarFotosOriginais()"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Voltar às fotos originais</button>
+              </div>
+              <input type="file" id="fi-arquivo" accept="image/*" class="sr-only" onchange="fotoEscolhida(event)" tabindex="-1" aria-hidden="true">
               <figure class="fi-cit">
                 <span class="fi-asp" aria-hidden="true">“</span>
                 <blockquote class="fi-frase" id="versiculo-diario"></blockquote>
@@ -1671,22 +1682,75 @@
     const ref = document.getElementById('versiculo-ref');
     ref.innerText = v.ref; ref.hidden = !v.ref;
   }
-  // Minha Força: foto que não carrega some do desenho; sem nenhuma, aparece um aviso
-  function ajustarFaixaFotos() {
-    const f = document.getElementById('fi-faixa'); if (!f) return;
-    const n = f.querySelectorAll('.fi-foto').length;
-    f.style.setProperty('--n', Math.max(1, n)); f.hidden = n === 0;
-    document.getElementById('fi-semfoto').hidden = n > 0;
+  // Minha Força & Inspiração: 4 posições. Padrão = foto1.jpg a foto4.jpg. A Izabela pode mudar a ordem e trocar por fotos do aparelho:
+  // preferencias.fotosInspiracao = [{ t: 'arq', v: 'foto1.jpg' } | { t: 'idb', v: 'insp_...' }] (as de 'idb' ficam no banco de imagens e vão no backup).
+  const FOTOS_PADRAO = ['foto1.jpg', 'foto2.jpg', 'foto3.jpg', 'foto4.jpg'].map(v => ({ t: 'arq', v }));
+  let fotosEditando = false, fotoAlvo = -1, fotosSig = '', fotosVez = 0;
+  function fotosAtuais() {
+    const l = preferencias && preferencias.fotosInspiracao;
+    return Array.isArray(l) && l.length === 4 && l.every(f => f && (f.t === 'arq' || f.t === 'idb') && typeof f.v === 'string') ? l : FOTOS_PADRAO;
   }
-  function vigiarFotos() {
-    document.querySelectorAll('#fi-faixa .fi-foto img').forEach(img => {
-      const tirar = () => { const b = img.closest('.fi-foto'); if (b) b.remove(); ajustarFaixaFotos(); };
-      if (img.complete && img.naturalWidth === 0) tirar(); else img.addEventListener('error', tirar, { once: true });
-    });
-    ajustarFaixaFotos();
+  async function srcDaFoto(f) {
+    if (f.t === 'arq') return f.v;
+    try { return await idbGet(f.v); } catch (e) { return null; }
+  }
+  function fotoQuebrada(img) {
+    const b = img.closest('.fi-foto'); if (!b) return;
+    b.classList.add('vazio'); b.removeAttribute('onclick'); b.disabled = true; b.setAttribute('aria-label', 'Foto indisponível');
+    b.innerHTML = '<i class="fa-regular fa-image" aria-hidden="true"></i><span>Sem foto</span>';
+  }
+  async function renderizarFotos(forcar = false, foco = null) {
+    const faixa = document.getElementById('fi-faixa'); if (!faixa) return;
+    const lista = fotosAtuais(), sig = JSON.stringify(lista) + '|' + fotosEditando;
+    if (!forcar && sig === fotosSig) return;
+    fotosSig = sig; const vez = ++fotosVez;
+    const srcs = await Promise.all(lista.map(srcDaFoto));
+    if (vez !== fotosVez) return;   // chegou um desenho mais novo
+    faixa.innerHTML = lista.map((f, k) => {
+      const n = k + 1;
+      const foto = srcs[k]
+        ? `<button type="button" class="fi-foto" onclick="ampliarFoto(this)" aria-label="Ampliar a foto ${n}"><img src="${esc(srcs[k])}" alt="Inspiração ${n}" onerror="fotoQuebrada(this)"><span class="fi-lupa" aria-hidden="true"><i class="fa-solid fa-magnifying-glass-plus"></i></span></button>`
+        : `<button type="button" class="fi-foto vazio" disabled aria-label="Foto ${n} indisponível"><i class="fa-regular fa-image" aria-hidden="true"></i><span>Sem foto</span></button>`;
+      const ctl = fotosEditando
+        ? `<div class="fi-ctl"><button type="button" data-fk="${k}" data-fa="ant" onclick="moverFoto(${k}, -1)" aria-label="Mover a foto ${n} para antes" ${k === 0 ? 'disabled' : ''}><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button><button type="button" data-fk="${k}" data-fa="trocar" onclick="trocarFoto(${k})" aria-label="Trocar a foto ${n} por outra">Trocar</button><button type="button" data-fk="${k}" data-fa="prox" onclick="moverFoto(${k}, 1)" aria-label="Mover a foto ${n} para depois" ${k === lista.length - 1 ? 'disabled' : ''}><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button></div>`
+        : '';
+      return `<div class="fi-item">${foto}${ctl}</div>`;
+    }).join('');
+    document.getElementById('fi-ajuda').hidden = !fotosEditando;
+    const bt = document.getElementById('fi-editar'); bt.setAttribute('aria-pressed', String(fotosEditando)); bt.querySelector('span').textContent = fotosEditando ? 'Concluir' : 'Editar fotos';
+    if (foco) { const alvo = faixa.querySelector(`[data-fk="${foco.k}"][data-fa="${foco.a}"]:not(:disabled)`) || faixa.querySelector(`[data-fk="${foco.k}"][data-fa="trocar"]`); if (alvo) alvo.focus(); }
+  }
+  function alternarEdicaoFotos() { fotosEditando = !fotosEditando; renderizarFotos(true); }
+  function moverFoto(k, d) {
+    const l = fotosAtuais().slice(), j = k + d;
+    if (j < 0 || j >= l.length) return;
+    [l[k], l[j]] = [l[j], l[k]];
+    preferencias.fotosInspiracao = l; salvarTudo(); renderizarFotos(true, { k: j, a: d < 0 ? 'ant' : 'prox' });
+  }
+  function trocarFoto(k) { fotoAlvo = k; const i = document.getElementById('fi-arquivo'); i.value = ''; i.click(); }
+  async function fotoEscolhida(ev) {
+    const file = ev.target.files[0], k = fotoAlvo; ev.target.value = '';
+    if (!file || k < 0 || k > 3) return;
+    if (!/^image\//.test(file.type)) { alert('Escolha um arquivo de imagem (foto).'); return; }
+    let id;
+    try {
+      const url = await comprimirImagem(file, 1200, 0.82);
+      id = 'insp_' + novoId();
+      await idbPut(id, url);
+    } catch (e) { alert('Não foi possível guardar esta foto. Tente outra imagem ou libere espaço no navegador. Nada foi alterado.'); return; }
+    const l = fotosAtuais().slice(), antigo = l[k];
+    l[k] = { t: 'idb', v: id };
+    preferencias.fotosInspiracao = l; salvarTudo();
+    if (antigo && antigo.t === 'idb') idbDel(antigo.v).catch(() => {});
+    renderizarFotos(true, { k, a: 'trocar' });
+  }
+  function restaurarFotosOriginais() {
+    if (!confirm('Voltar às 4 fotos originais? As fotos que você colocou serão removidas deste navegador.')) return;
+    fotosAtuais().filter(f => f.t === 'idb').forEach(f => idbDel(f.v).catch(() => {}));
+    delete preferencias.fotosInspiracao; salvarTudo(); renderizarFotos(true);
   }
   function ampliarFoto(btn) {
-    const todas = [...document.querySelectorAll('#fi-faixa .fi-foto')];
+    const todas = [...document.querySelectorAll('#fi-faixa .fi-foto:not(.vazio)')];
     const itens = todas.map((b, k) => { const im = b.querySelector('img'); return { src: im.currentSrc || im.src, nome: `inspiracao-${k + 1}.jpg` }; });
     abrirVisualizadorPrint(itens, todas.indexOf(btn), { tipo: 'Foto' }, btn);
   }
@@ -2476,6 +2540,7 @@
     if (visivel('view-historico')) renderizarHistorico();
     atualizarDisplayCronometro();   // anel do dia no cronômetro zerado
     atualizarSeletores();           // estrela e peso nos gatilhos dos seletores
+    renderizarFotos();              // só redesenha se a lista de fotos mudou
   }
 
   // =====================================================================
@@ -5738,6 +5803,11 @@
         if (src) imagens[id] = src;
       }
     }
+    for (const f of fotosAtuais()) {   // fotos colocadas pela Izabela em Minha Força & Inspiração
+      if (f.t !== 'idb') continue;
+      const src = await idbGet(f.v);
+      if (src) imagens[f.v] = src;
+    }
     const payload = { app: APP_BACKUP, dataExportacao: new Date().toISOString(), ...estadoAtual(), imagens };
     baixarArquivo(JSON.stringify(payload), `backup_central_estudos_${hojeISO()}${sufixo}.json`);
   }
@@ -5773,6 +5843,7 @@
       // backup de versão antiga: converte para a Etapa 3 (sem as imagens no backup automático, que ficam no IndexedDB)
       if (versaoDados < VERSAO_DADOS) migrarDadosEtapa3(JSON.stringify({ ...parsed, imagens: undefined }));
       salvarTudo();
+      renderizarFotos(true);
       fecharModalBackup();
       alert('Backup restaurado com sucesso!');
     } catch (err) {
@@ -5960,7 +6031,6 @@
       atualizarIconeTema();
     }
     atualizarVersiculo();
-    vigiarFotos();
     atualizarCountdown();
     let bruto = null;
     try {

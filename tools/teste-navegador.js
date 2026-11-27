@@ -54,6 +54,46 @@ async function servirCDNLocal(ctx) {
   const fotos = await page.evaluate(() => [...document.querySelectorAll('#fi-faixa .fi-foto img')].map(i => i.complete && i.naturalWidth > 0));
   ok(fotos.length === 4 && fotos.every(Boolean), 'as 4 fotos de Minha Força carregam', JSON.stringify(fotos));
 
+
+  // ---- Minha Força & Inspiração: mover, trocar, persistir, backup e voltar às originais ----
+  const imgTeste = async (cor, ext) => { const b64 = await page.evaluate(c => { const cv = document.createElement('canvas'); cv.width = 800; cv.height = 600; const g = cv.getContext('2d'); g.fillStyle = c; g.fillRect(0, 0, 800, 600); g.fillStyle = '#fff'; g.font = '80px sans-serif'; g.fillText('teste', 250, 320); return cv.toDataURL('image/png').split(',')[1]; }, cor); const f = path.join(os.tmpdir(), `foto-teste-${cor.slice(1)}.png`); fs.writeFileSync(f, Buffer.from(b64, 'base64')); return f; };
+  const ordemFotos = () => page.evaluate(() => [...document.querySelectorAll('#fi-faixa .fi-foto img')].map(i => i.getAttribute('src').startsWith('data:') ? 'idb' : i.getAttribute('src')));
+  await page.evaluate(() => navigate('dashboard'));
+  ok((await ordemFotos()).join() === 'foto1.jpg,foto2.jpg,foto3.jpg,foto4.jpg', 'fotos começam na ordem original');
+  ok(await page.evaluate(() => document.querySelectorAll('.fi-ctl').length === 0), 'sem controles fora do modo de edição');
+  await page.click('#fi-editar');
+  const ed = await page.evaluate(() => ({ ctl: document.querySelectorAll('.fi-ctl').length, primeiroAntDesab: document.querySelector('[data-fk="0"][data-fa="ant"]').disabled, ultimoProxDesab: document.querySelector('[data-fk="3"][data-fa="prox"]').disabled, pressed: document.getElementById('fi-editar').getAttribute('aria-pressed') }));
+  ok(ed.ctl === 4 && ed.primeiroAntDesab && ed.ultimoProxDesab && ed.pressed === 'true', 'modo de edição mostra 4 controles e trava as pontas', JSON.stringify(ed));
+  const rF = await page.evaluate(() => { const m = document.getElementById('main-content'); return [m.scrollWidth, m.clientWidth]; });
+  ok(rF[0] <= rF[1], '390px · fotos em modo de edição: sem rolagem lateral', JSON.stringify(rF));
+  await page.click('[data-fk="0"][data-fa="prox"]'); await page.waitForTimeout(400);
+  ok((await ordemFotos()).join() === 'foto2.jpg,foto1.jpg,foto3.jpg,foto4.jpg', 'mover a foto 1 para depois troca de posição com a 2');
+  ok(await page.evaluate(() => document.activeElement && document.activeElement.dataset.fk === '1' && document.activeElement.dataset.fa === 'prox'), 'foco acompanha a foto movida');
+  await page.click('[data-fk="1"][data-fa="ant"]'); await page.waitForTimeout(400);
+  ok((await ordemFotos()).join() === 'foto1.jpg,foto2.jpg,foto3.jpg,foto4.jpg', 'mover de volta restaura a ordem');
+  const f1 = await imgTeste('#b91c1c'), f2 = await imgTeste('#1d4ed8');
+  const trocar = async (k, arq) => { const [fc] = await Promise.all([page.waitForEvent('filechooser'), page.click(`[data-fk="${k}"][data-fa="trocar"]`)]); await fc.setFiles(arq); await page.waitForTimeout(900); };
+  await trocar(2, f1);
+  const idAntigo = await page.evaluate(() => preferencias.fotosInspiracao[2].v);
+  let o = await ordemFotos();
+  ok(o.join() === 'foto1.jpg,foto2.jpg,idb,foto4.jpg' && /^insp_/.test(idAntigo), 'trocar a foto 3 por outra do aparelho', o.join());
+  ok(await page.evaluate(() => { const i = document.querySelectorAll('#fi-faixa .fi-foto img')[2]; return i.complete && i.naturalWidth > 0 && i.src.startsWith('data:image/jpeg'); }), 'foto nova carrega e foi guardada como JPEG reduzido');
+  await trocar(2, f2);
+  const idNovo = await page.evaluate(() => preferencias.fotosInspiracao[2].v);
+  ok(idNovo !== idAntigo && (await page.evaluate(id => idbGet(id), idAntigo)) === null && !!(await page.evaluate(id => idbGet(id), idNovo)), 'trocar de novo apaga a foto anterior do navegador');
+  await page.click('[data-fk="2"][data-fa="ant"]'); await page.waitForTimeout(400);
+  o = await ordemFotos();
+  ok(o.join() === 'foto1.jpg,idb,foto2.jpg,foto4.jpg', 'foto nova pode mudar de posição', o.join());
+  await page.click('#fi-editar'); await page.waitForTimeout(300);
+  ok(await page.evaluate(() => document.querySelectorAll('.fi-ctl').length === 0 && document.getElementById('fi-ajuda').hidden), 'Concluir esconde os controles');
+  await page.click('#fi-faixa .fi-item:nth-child(2) .fi-foto'); await page.waitForTimeout(400);
+  ok(await page.evaluate(() => !!document.getElementById('visualizador-print')), 'tocar na foto nova abre o visualizador');
+  await page.keyboard.press('Escape'); await page.waitForTimeout(200);
+  await page.reload(); await page.waitForTimeout(1200);
+  o = await ordemFotos();
+  ok(o.join() === 'foto1.jpg,idb,foto2.jpg,foto4.jpg' && await page.evaluate(() => { const i = document.querySelectorAll('#fi-faixa .fi-foto img')[1]; return i.complete && i.naturalWidth > 0; }), 'ordem e foto nova continuam depois de recarregar a página', o.join());
+  const idFotoBackup = await page.evaluate(() => preferencias.fotosInspiracao[1].v);
+
   // chaves de armazenamento no uso normal
   await page.evaluate(() => { registrarEstudo({ id: 1, data: hojeISO(), discId: 'penal', topicoId: 't_0', minutos: 30, segundos: 1800, tipo: 'Teoria' }); salvarTudo(); });
 
@@ -153,6 +193,7 @@ async function servirCDNLocal(ctx) {
   const bk = JSON.parse(fs.readFileSync(arq, 'utf8')), bruto = fs.readFileSync(arq, 'utf8');
   ok(/^backup_central_estudos_\d{4}-\d{2}-\d{2}\.json$/.test(dl.suggestedFilename()), 'backup baixado', dl.suggestedFilename());
   ok(bk.app === 'Central_Estudos_Izabela_PCPE' && bk.dados.length === 10 && bk.registrosEstudo.length === 1 && bk.preferencias.dataProva === futuro, 'backup traz app, 10 disciplinas, registro e data da prova', `app=${bk.app}`);
+  ok(!!bk.imagens && /^data:image\/jpeg/.test(bk.imagens[idFotoBackup] || ''), 'backup leva a foto colocada pela Izabela');
   ok(!new RegExp(['jess', 'ica|jé', 'ssica|ama', 'nda|ao', 'cp|pm', 'pe|cb', 'mpe|sol', 'dado'].join(''), 'i').test(bruto), 'backup sem textos antigos');
   await page.evaluate(() => fecharModalBackup());
 
@@ -179,7 +220,15 @@ async function servirCDNLocal(ctx) {
   dialogos.length = 0;
   await p2.setInputFiles('#modal-backup input[type=file]', arq); await p2.waitForTimeout(1500);
   const rest = await p2.evaluate(() => ({ n: registrosEstudo.length, d: preferencias.dataProva, discs: meusDados.length }));
+  const fotoRest = await p2.evaluate(async () => { await renderizarFotos(true); const i = document.querySelectorAll('#fi-faixa .fi-foto img')[1]; return { ordem: fotosAtuais().map(f => f.v).join(), ok: !!i && i.src.startsWith('data:image/jpeg') }; });
+  ok(fotoRest.ok && /^foto1\.jpg,insp_.*,foto2\.jpg,foto4\.jpg$/.test(fotoRest.ordem), 'restaurar o backup traz a ordem e a foto nova de volta', fotoRest.ordem);
   ok(rest.n === 1 && rest.d === futuro && rest.discs === 10 && dialogos.some(m => /Restaurar o backup de/.test(m)), 'restaurar o backup desta versão devolve os dados', JSON.stringify(rest));
+
+  // voltar às fotos originais
+  page.once('dialog', d => d.accept());
+  await page.evaluate(() => { navigate('dashboard'); alternarEdicaoFotos(); }); await page.waitForTimeout(300);
+  await page.click('.fi-rest'); await page.waitForTimeout(700);
+  ok((await ordemFotos()).join() === 'foto1.jpg,foto2.jpg,foto3.jpg,foto4.jpg' && (await page.evaluate(id => idbGet(id), idFotoBackup)) === null && await page.evaluate(() => !('fotosInspiracao' in preferencias)), 'voltar às originais refaz a ordem e apaga a foto nova do navegador');
 
   ok(erros.length === 0, 'sem erros de JavaScript', erros.slice(0, 3).join(' | '));
   await browser.close();

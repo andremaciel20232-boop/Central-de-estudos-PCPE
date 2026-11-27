@@ -54,6 +54,7 @@ NOÇÕES DE DIREITO ADMINISTRATIVO
 NOÇÕES DE DIREITO PENAL
 
 1 Princípios básicos.
+2 Crime e contravenção penal.
 3 Aplicação da lei penal.
 3.1 Lei penal no tempo e no espaço.
 3.2 Tempo e lugar do crime.
@@ -97,6 +98,7 @@ NOÇÕES DE DIREITO PROCESSUAL PENAL
 6 Lei nº 7.960/1989 (prisão temporária).
 7 Juizados especiais criminais (Lei nº 9.099/1995).
 8 Investigação criminal (Lei nº 12.830/2013).
+9 Disposições constitucionais aplicáveis ao direito processual penal.
 
 RACIOCÍNIO LÓGICO
 
@@ -128,6 +130,7 @@ CONTABILIDADE GERAL
 1 Conceitos, objetivos e finalidades da contabilidade.
 2 Patrimônio: equação fundamental, situação líquida, representação gráfica.
 3 Atos e fatos administrativos: fatos permutativos, modificativos e mistos.
+4 Contas: débitos, créditos e saldos.
 5 Plano de contas.
 6 Escrituração: lançamentos, livros, métodos, regime de competência e de caixa.
 7 Contabilização de operações diversas: juros, descontos, tributos, aluguéis, variação monetária/cambial, folha, compras, vendas, provisões, depreciações e baixa de bens.
@@ -150,6 +153,7 @@ ESTATÍSTICA
 2.2 Probabilidade condicional e independência.
 3 Técnicas de amostragem.
 3.1 Amostragem aleatória simples, estratificada, sistemática e por conglomerados.
+3.2 Tamanho amostral.
 
 LÍNGUA PORTUGUESA
 

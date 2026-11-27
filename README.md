@@ -19,7 +19,7 @@ Vazia por padrão. A Izabela define no Painel (campo "Data da prova"). Sem data,
 - Lateral: definir `--foto-lateral: url(img/lateral.webp)` em `:root`.
 - Topo do Painel: definir `--hr-img: url(img/painel.webp)` em `.hr`.
 - Foto de perfil: `perfil.jpg` na raiz; sem ela aparece uma silhueta.
-- Minha Força & Inspiração: `foto1.jpg` a `foto4.jpg` na raiz; sem elas a seção mostra um aviso.
+- Minha Força & Inspiração: `foto1.jpg` a `foto4.jpg` na raiz (já incluídas, em JPEG até 1200 px e sem metadados). Para trocar, substitua os arquivos mantendo os nomes; sem eles a seção mostra um aviso.
 - Otimizar antes de subir (WebP ou JPEG, até 1600 px de largura, de preferência abaixo de 200 KB). O véu escuro já está nos dois lugares para o texto passar em AA nos dois temas.
 
 ## A confirmar

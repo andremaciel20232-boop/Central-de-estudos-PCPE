@@ -41,6 +41,9 @@ ok(!/elimin/i.test(html) && !/\b30 ?%/.test(html), 'sem alerta de eliminação d
 const lidas = [...html.matchAll(/(?:localStorage\.(?:getItem|setItem|removeItem)|indexedDB\.open)\(\s*'([^']+)'/g)].map(x => x[1]);
 console.log('      chaves usadas literalmente:', [...new Set(lidas)].join(', '));
 
+// 5b. Fotos de Minha Força & Inspiração presentes e leves
+[1, 2, 3, 4].forEach(n => { const f = path.join(raiz, `foto${n}.jpg`); const t = fs.existsSync(f) ? fs.statSync(f).size : 0; ok(t > 0 && t < 400 * 1024, `foto${n}.jpg existe e é leve (${Math.round(t / 1024)} KB)`); });
+
 // 6. Marcador das fases pendentes
 ok(/A CONFIRMAR: fases do edital PCPE/.test(html), 'marcador "a confirmar" das fases do edital no código');
 

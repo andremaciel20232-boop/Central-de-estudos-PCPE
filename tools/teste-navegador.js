@@ -12,7 +12,7 @@ const ok = (c, msg, extra = '') => { console.log((c ? 'OK    ' : 'FALHA ') + msg
 async function servirCDNLocal(ctx) {
   const dir = process.env.CDN_LOCAL; if (!dir) return;
   const fa = path.join(dir, 'node_modules', '@fortawesome', 'fontawesome-free');
-  await ctx.route('https://cdn.tailwindcss.com/**', r => r.fulfill({ contentType: 'application/javascript', body: `(function(){var s=document.createElement('style');s.textContent=${JSON.stringify(fs.readFileSync(path.join(dir, 'tailwind.css'), 'utf8'))};document.head.appendChild(s);})();` }));
+  await ctx.route('https://cdn.tailwindcss.com/**', r => r.fulfill({ contentType: 'application/javascript', body: `document.addEventListener('DOMContentLoaded',function(){var s=document.createElement('style');s.textContent=${JSON.stringify(fs.readFileSync(path.join(dir, 'tailwind.css'), 'utf8'))};document.head.appendChild(s);});` }));   // no fim do <head>, como o CDN real (a ordem decide quem vence entre .hidden e o CSS da página)
   await ctx.route('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css', r => r.fulfill({ contentType: 'text/css', body: fs.readFileSync(path.join(fa, 'css', 'all.min.css')) }));
   await ctx.route('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/*', r => { const f = path.join(fa, 'webfonts', r.request().url().split('/').pop()); fs.existsSync(f) ? r.fulfill({ body: fs.readFileSync(f), contentType: 'font/woff2' }) : r.abort(); });
 }
@@ -44,6 +44,10 @@ async function servirCDNLocal(ctx) {
   ok(ini.cab.includes('Central de Estudos') && ini.cab.includes('Agente de Polícia · PCPE (Cebraspe)'), 'cabeçalho', ini.cab);
   ok(ini.ola === 'Olá, Izabela.', 'saudação', ini.ola);
   ok(/data a definir/.test(ini.contagem) && !/\d+\s*dias/i.test(ini.contagem) && !/faltam/i.test(ini.contagem), 'sem data: "data a definir" e sem contagem', ini.contagem);
+
+  ok(await page.evaluate(() => getComputedStyle(document.getElementById('aviso-outra-aba')).display === 'none'), 'aviso de "cronômetro em outra aba" escondido numa aba única');
+  const fotos = await page.evaluate(() => [...document.querySelectorAll('#fi-faixa .fi-foto img')].map(i => i.complete && i.naturalWidth > 0));
+  ok(fotos.length === 4 && fotos.every(Boolean), 'as 4 fotos de Minha Força carregam', JSON.stringify(fotos));
 
   // chaves de armazenamento no uso normal
   await page.evaluate(() => { registrarEstudo({ id: 1, data: hojeISO(), discId: 'penal', topicoId: 't_0', minutos: 30, segundos: 1800, tipo: 'Teoria' }); salvarTudo(); });

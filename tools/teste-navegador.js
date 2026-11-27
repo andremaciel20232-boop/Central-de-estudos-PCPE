@@ -68,6 +68,41 @@ async function servirCDNLocal(ctx) {
     ok(r[0] <= r[1], `390px ${tema} · Montar ciclo sem data: sem rolagem lateral`, JSON.stringify(r));
   }
 
+
+  // contraste (AA, 4,5:1) do texto sobre as fotos do Painel e da lateral, nos dois temas e em dois tamanhos
+  const SELETORES_FOTO = ['.hr-ola', '.hr-frase', '.hr-data', '.hr-cont .hr-lbl', '.hr-cont .hr-prova', '.hr-dp span', '.lat-foto h1', '.lat-foto p'];
+  const decod = await browser.newPage();
+  for (const [larg, alt] of [[1280, 800], [390, 844]]) {
+    await page.setViewportSize({ width: larg, height: alt });
+    for (const tema of ['dark', 'light']) {
+      await page.evaluate(t => { document.body.classList.toggle('light-mode', t === 'light'); navigate('dashboard'); document.getElementById('main-content').scrollTop = 0; }, tema);
+      await page.waitForTimeout(300);
+      const alvos = await page.evaluate(sels => sels.flatMap(sel => [...document.querySelectorAll(sel)].map(el => {
+        const r = el.getBoundingClientRect(), cs = getComputedStyle(el);
+        const c = cs.color.match(/[\d.]+/g).map(Number);
+        return (r.width > 4 && r.height > 4 && r.bottom > 0 && r.top < innerHeight && cs.visibility !== 'hidden') ? { sel, x: r.left, y: r.top, w: r.width, h: r.height, cor: c.slice(0, 3) } : null;
+      }).filter(Boolean)), SELETORES_FOTO);
+      await page.addStyleTag({ content: '*{color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:none!important}' });
+      const png = (await page.screenshot()).toString('base64');
+      await page.evaluate(() => { const e = [...document.querySelectorAll('style')].pop(); if (e && /transparent!important/.test(e.textContent)) e.remove(); });
+      const minimos = await decod.evaluate(async ({ png, alvos }) => {
+        const img = new Image(); img.src = 'data:image/png;base64,' + png; await img.decode();
+        const cv = document.createElement('canvas'); cv.width = img.width; cv.height = img.height; const g = cv.getContext('2d'); g.drawImage(img, 0, 0);
+        const f = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+        return alvos.map(a => {
+          const x = Math.max(0, Math.floor(a.x)), y = Math.max(0, Math.floor(a.y)), w = Math.min(img.width - x, Math.ceil(a.w)), h = Math.min(img.height - y, Math.ceil(a.h));
+          const d = g.getImageData(x, y, w, h).data, Lt = 0.2126 * f(a.cor[0]) + 0.7152 * f(a.cor[1]) + 0.0722 * f(a.cor[2]); let pior = Infinity;
+          for (let i = 0; i < d.length; i += 4) { const L = 0.2126 * f(d[i]) + 0.7152 * f(d[i + 1]) + 0.0722 * f(d[i + 2]); const r = (Math.max(L, Lt) + 0.05) / (Math.min(L, Lt) + 0.05); if (r < pior) pior = r; }
+          return { sel: a.sel, r: pior };
+        });
+      }, { png, alvos });
+      const pior = minimos.map(m => ({ sel: m.sel, r: Math.round(m.r * 100) / 100 })).sort((a, b) => a.r - b.r)[0];
+      ok(alvos.length > 0 && pior && pior.r >= 4.5, `contraste AA do texto sobre as fotos (${larg}px, ${tema}): pior caso ${pior ? pior.r + ':1 em ' + pior.sel : 'sem alvos'} (${alvos.length} textos)`);
+    }
+  }
+  await decod.close();
+  await page.setViewportSize({ width: 390, height: 844 });
+
   // data da prova pelo Painel
   await page.evaluate(() => { fecharMontarCiclo(); navigate('dashboard'); });
   const futuro = await page.evaluate(() => { const d = new Date(); d.setDate(d.getDate() + 100); return isoLocal(d); });

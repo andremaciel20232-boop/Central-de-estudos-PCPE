@@ -15,12 +15,10 @@ Página única (`index.html`), sem servidor. Os dados ficam no navegador (`local
 ## Data da prova
 Vazia por padrão. A Izabela define no Painel (campo "Data da prova"). Sem data, não há contagem de dias e o Montar ciclo pede a data.
 
-## Fotos (placeholders até as imagens chegarem)
-- Lateral: definir `--foto-lateral: url(img/lateral.webp)` em `:root`.
-- Topo do Painel: definir `--hr-img: url(img/painel.webp)` em `.hr`.
+## Fotos
+- Topo do Painel: `img/painel.jpg`. Faixa lateral: `img/lateral.jpg`. Para trocar, substitua o arquivo mantendo o nome (otimizar antes: JPEG ou WebP, até 1600 px, de preferência abaixo de 200 KB). O véu escuro já está nos dois lugares; `tools/teste-navegador.js` mede o contraste do texto sobre a foto.
 - Foto de perfil: `perfil.jpg` na raiz; sem ela aparece uma silhueta.
-- Minha Força & Inspiração: `foto1.jpg` a `foto4.jpg` na raiz (já incluídas, em JPEG até 1200 px e sem metadados). Para trocar, substitua os arquivos mantendo os nomes; sem eles a seção mostra um aviso.
-- Otimizar antes de subir (WebP ou JPEG, até 1600 px de largura, de preferência abaixo de 200 KB). O véu escuro já está nos dois lugares para o texto passar em AA nos dois temas.
+- Minha Força & Inspiração: `foto1.jpg` a `foto4.jpg` na raiz (JPEG até 1200 px, sem metadados). Sem os arquivos a seção mostra um aviso.
 
 ## A confirmar
 Fases do edital PCPE (prova discursiva, prova oral do Delegado, exames médicos, capacidade física, avaliação psicológica e investigação social): marcador `A CONFIRMAR` no `index.html`. Nada foi implementado nem removido.

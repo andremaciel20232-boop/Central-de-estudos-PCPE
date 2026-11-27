@@ -190,9 +190,9 @@
     :root { --contorno-dia: #e5e7eb; } body.light-mode { --contorno-dia: #64748b; }
     .card-dia { border-color: var(--contorno-dia); }
     /* fotos: foto larga no cabeçalho, foto alta no bloco lateral, com véu escuro nos dois temas */
-    /* Foto da lateral: placeholder em degradê até a imagem nova chegar. Para trocar, definir --foto-lateral: url(img/lateral.webp) em :root.
+    /* Foto da lateral: img/lateral.jpg. Para trocar, substituir o arquivo (ou definir --foto-lateral em :root).
        O véu escuro (.74 a .84) fica por cima e mantém o texto claro com contraste AA nos dois temas. */
-    .lat-foto { background: linear-gradient(180deg, rgba(19,22,28,.74) 0%, rgba(19,22,28,.84) 100%), var(--foto-lateral, linear-gradient(135deg, #1e3a5f 0%, #0f3d3a 100%)) center top / cover, #13161c; min-height: 220px; justify-content: center; }
+    .lat-foto { background: linear-gradient(180deg, rgba(19,22,28,.74) 0%, rgba(19,22,28,.84) 100%), var(--foto-lateral, url(img/lateral.jpg)) center / cover, #13161c; min-height: 220px; justify-content: center; }
     .lat-foto h1 { color: #f1f5f9; } .lat-foto p { color: #cbd5e1; }
     .lat-avatar { width: 84px; height: 84px; border-radius: 50%; border: 3px solid rgba(255,255,255,.85); background: #0f172a; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,.4); flex: none; }
     .lat-avatar img { width: 100%; height: 100%; object-fit: cover; } .lat-avatar img.logo-fallback { object-fit: contain; padding: 6px; }
@@ -798,8 +798,8 @@
     /* ===== Herói do Dashboard: sequência, contagem, tempo e edital ===== */
     .hr { --hr-acento: #f98a2b; --hr-acento-bg: rgba(249,138,43,.09); --hr-vd: #34d399; --hr-vm: #f87171; --hr-neutro: #94a3b8;
           container-type: inline-size; container-name: hr; border-radius: 18px; overflow: hidden; position: relative; isolation: isolate; color: #f8fafc;
-          border: 1px solid #3a4256; border-left: 5px solid var(--hr-acento); background: #0e1116 var(--hr-img, linear-gradient(135deg, #16283d 0%, #0e1116 70%)) center / cover; }
-    /* Foto do topo do Painel: placeholder em degradê. Para trocar, definir --hr-img: url(img/painel.webp) no .hr; o véu ::before já garante AA. */
+          border: 1px solid #3a4256; border-left: 5px solid var(--hr-acento); background: #0e1116 var(--hr-img, url(img/painel.jpg)) center / cover; }
+    /* Foto do topo do Painel: img/painel.jpg. Para trocar, substituir o arquivo (ou definir --hr-img no .hr); o véu ::before (.94 a .7) mantém o texto em AA. */
     .hr::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(95deg, rgba(8,11,16,.94) 0%, rgba(8,11,16,.86) 58%, rgba(8,11,16,.7) 100%); }
     .hr-in { display: grid; gap: 14px; padding: 18px; grid-template-columns: minmax(0, 1fr); }
     .hr-esq { display: grid; gap: 12px; min-width: 0; align-content: center; }

@@ -4,16 +4,16 @@ Página única (`index.html`), sem servidor. Os dados ficam no navegador (`local
 
 ## Estrutura
 - `index.html`: o app inteiro.
-- `edital/conteudo-pcpe.txt`: fonte dos tópicos (disciplinas em MAIÚSCULAS; tópicos como `1.1 Texto`). O nível vem da numeração.
+- `edital/conteudo-pcpe.txt`: fonte dos tópicos (conferido com o item 22.2.3 do Edital nº 1/2026, cargo de Agente de Polícia) (disciplinas em MAIÚSCULAS; tópicos como `1.1 Texto`). O nível vem da numeração.
 - `tools/gerar-edital.js`: copia o `.txt` para o bloco `EDITAL_DADOS` do `index.html`. Depois de editar o `.txt`: `node tools/gerar-edital.js`.
 - `tools/verificar.js`: conferências estáticas (disciplinas, textos proibidos, chaves de armazenamento, edital em dia).
 - `tools/teste-navegador.js`: teste no navegador (Playwright): layout em 390 px nos dois temas, data da prova, peso, estrela e backup. Onde os CDNs estiverem bloqueados, use `CDN_LOCAL` (veja o comentário no arquivo).
 
 ## Chaves de armazenamento
-`central_estudos_izabela_v1`, `central_cronometro_izabela_v1`, `central_ui_prefs_izabela_v1`, IndexedDB `central_estudos_izabela_imgs`, além de `central_tema` e `central_bilhete`. A versão começa vazia: nenhuma chave de outra versão é lida.
+`central_estudos_izabela_v1`, `central_cronometro_izabela_v1`, `central_ui_prefs_izabela_v1`, IndexedDB `central_estudos_izabela_imgs`, além de `central_tema` e `central_bilhete`. A versão começa vazia (só a data da prova vem preenchida): nenhuma chave de outra versão é lida.
 
-## Data da prova
-Vazia por padrão. A Izabela define no Painel (campo "Data da prova"). Sem data, não há contagem de dias e o Montar ciclo pede a data.
+## Banca e data da prova
+Banca Cebraspe. Prova objetiva e discursiva em **07/03/2027** (valor inicial em `DATA_PROVA_PADRAO`, no `index.html`). A Izabela pode mudar ou limpar a data no Painel; limpa, o app mostra "data a definir", não conta dias e o Montar ciclo pede a data. A coluna de datas do cronograma do edital veio cortada no PDF, então vale confirmar a data no site do Cebraspe.
 
 ## Fotos
 - Topo do Painel: `img/painel.jpg`. Faixa lateral: `img/lateral.jpg`. Para trocar, substitua o arquivo mantendo o nome (otimizar antes: JPEG ou WebP, até 1600 px, de preferência abaixo de 200 KB). O véu escuro já está nos dois lugares; `tools/teste-navegador.js` mede o contraste do texto sobre a foto.

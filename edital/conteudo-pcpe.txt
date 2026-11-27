@@ -1,5 +1,6 @@
 NOÇÕES DE DIREITO – LEGISLAÇÃO ESTADUAL
 
+1 Constituição do Estado de Pernambuco (artigos 101 a 105-B).
 2 Lei nº 6.425/1972 (Estatuto do Policial Civil).
 3 Lei nº 6.123/1968 (Estatuto do Servidor de PE).
 4 Lei Complementar nº 137/2008 (PCCV da PC-PE).
@@ -28,6 +29,8 @@ NOÇÕES DE DIREITO CONSTITUCIONAL
 
 NOÇÕES DE DIREITO ADMINISTRATIVO
 
+1 Estado, governo e administração pública.
+2 Direito administrativo.
 3 Ato administrativo.
 4 Poderes da administração pública.
 4.1 Hierárquico, disciplinar, regulamentar e de polícia.
@@ -44,6 +47,7 @@ NOÇÕES DE DIREITO ADMINISTRATIVO
 9.1 Controle administrativo.
 9.2 Controle judicial.
 9.3 Controle legislativo.
+9.4 Improbidade administrativa.
 10 Processo administrativo.
 11 Licitações e contratos administrativos.
 12 Agente público.
@@ -79,6 +83,7 @@ NOÇÕES DE DIREITO PENAL
 18 Crimes ambientais (Lei nº 9.605/1998).
 19 Estatuto do Desarmamento (Lei nº 10.826/2003).
 20 Estatuto da Juventude (Lei nº 12.852/2013).
+21 Disposições constitucionais aplicáveis ao direito penal.
 
 NOÇÕES DE DIREITO PROCESSUAL PENAL
 
@@ -91,6 +96,7 @@ NOÇÕES DE DIREITO PROCESSUAL PENAL
 3.4 Testemunhas.
 3.5 Reconhecimento de pessoas e coisas.
 3.6 Acareação.
+3.7 Documentos.
 3.8 Indícios.
 3.9 Busca e apreensão.
 4 Prisão e liberdade provisória.
@@ -124,6 +130,7 @@ RACIOCÍNIO LÓGICO
 12 Lógica de primeira ordem.
 13 Princípios de contagem e probabilidade.
 14 Operações com conjuntos.
+15 Raciocínio lógico envolvendo problemas aritméticos, geométricos e matriciais.
 
 CONTABILIDADE GERAL
 
@@ -171,6 +178,7 @@ LÍNGUA PORTUGUESA
 5.5 Concordância verbal e nominal.
 5.6 Regência verbal e nominal.
 5.7 Emprego do sinal indicativo de crase.
+5.8 Colocação dos pronomes átonos.
 6 Reescrita de frases e parágrafos do texto.
 6.1 Significação das palavras.
 6.2 Substituição de palavras ou de trechos de texto.
@@ -188,15 +196,20 @@ INFORMÁTICA
 1 Sistema operacional Windows.
 1.1 Fundamentos do Windows: janelas, menus, barra de tarefas, área de trabalho.
 1.2 Pastas e arquivos.
+1.3 Configurações básicas do Windows: resolução da tela, cores, fontes, impressoras, aparência, segundo plano, protetor de tela.
+1.4 Windows Explorer.
 2 Microsoft 365.
 2.1 Word.
 2.1.1 a 2.1.7 Área de trabalho, formatação, listas e colunas, tabelas, estilos, cabeçalhos e configuração de página.
 2.2 Excel.
 2.2.1 a 2.2.6 Interface, fórmulas, funções, formatação, edição e classificação.
+2.2.7 Gráficos.
 2.3 PowerPoint.
 2.3.1 a 2.3.8 Interface, slides, objetos, listas, tabelas, leiaute, slide mestre e animações.
+2.3.9 Integração com Word e Excel.
 3 Redes de computadores.
 3.1 Internet, intranet, grupos de discussão, redes sociais, computação na nuvem, navegadores, deep web e dark web.
+3.2 Correio eletrônico: endereços, utilização de recursos típicos.
 3.3 Navegadores e sítios de busca.
 3.4 Segurança: acessos, programas maliciosos, antivírus e criptografia.
 3.5 Backup e armazenamento de dados na nuvem.

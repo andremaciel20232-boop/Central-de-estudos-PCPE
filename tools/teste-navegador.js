@@ -43,7 +43,11 @@ async function servirCDNLocal(ctx) {
   ok(ini.questoes === 0, 'Montar ciclo sem pesos nem questões pré-preenchidos');
   ok(ini.cab.includes('Central de Estudos') && ini.cab.includes('Agente de Polícia · PCPE (Cebraspe)'), 'cabeçalho', ini.cab);
   ok(ini.ola === 'Olá, Izabela.', 'saudação', ini.ola);
-  ok(/data a definir/.test(ini.contagem) && !/\d+\s*dias/i.test(ini.contagem) && !/faltam/i.test(ini.contagem), 'sem data: "data a definir" e sem contagem', ini.contagem);
+  ok(ini.dataProva === '2027-03-07' && /07\/03\/2027/.test(ini.contagem), 'data da prova começa em 07/03/2027 (Cebraspe)', ini.contagem);
+  // limpar a data: volta a "data a definir", sem contagem, e continua limpa
+  await page.evaluate(() => definirDataProva('')); await page.waitForTimeout(200);
+  const semData = await page.evaluate(() => ({ c: document.querySelector('.hr-cont').innerText.replace(/\s+/g, ' '), v: JSON.parse(localStorage.getItem('central_estudos_izabela_v1')).preferencias.dataProva }));
+  ok(/data a definir/i.test(semData.c) && !/\d+\s*dias/i.test(semData.c) && !/faltam/i.test(semData.c) && semData.v === '', 'sem data: "data a definir" e sem contagem', semData.c);
 
   ok(await page.evaluate(() => getComputedStyle(document.getElementById('aviso-outra-aba')).display === 'none'), 'aviso de "cronômetro em outra aba" escondido numa aba única');
   ok(await page.evaluate(() => { const i = document.querySelector('.lat-avatar img'); return i.complete && i.naturalWidth > 0 && /perfil\.png$/.test(i.src); }), 'foto de perfil (brasão) carrega');
@@ -106,10 +110,10 @@ async function servirCDNLocal(ctx) {
 
   // data da prova pelo Painel
   await page.evaluate(() => { fecharMontarCiclo(); navigate('dashboard'); });
-  const futuro = await page.evaluate(() => { const d = new Date(); d.setDate(d.getDate() + 100); return isoLocal(d); });
+  const futuro = await page.evaluate(() => { const d = new Date(); d.setDate(d.getDate() + 37); return isoLocal(d); });
   await page.fill('#hr-data-prova', futuro); await page.waitForTimeout(300);
   const c1 = await page.evaluate(() => document.querySelector('.hr-cont').innerText.replace(/\s+/g, ' '));
-  ok(/faltam 100 dias para a prova/i.test(c1), 'com data: contagem aparece', c1);
+  ok(/faltam 37 dias para a prova/i.test(c1), 'com data: contagem aparece', c1);
   ok(await page.evaluate(() => JSON.parse(localStorage.getItem('central_estudos_izabela_v1')).preferencias.dataProva) === futuro, 'data gravada em preferencias (vai no backup)');
 
   // Montar ciclo com data: peso por disciplina
@@ -170,7 +174,7 @@ async function servirCDNLocal(ctx) {
     dialogos.length = 0;
     await p2.setInputFiles('#modal-backup input[type=file]', f); await p2.waitForTimeout(700);
     const estado = await p2.evaluate(() => ({ n: registrosEstudo.length, d: preferencias.dataProva }));
-    ok(dialogos.length === 1 && /não é um backup da Central de Estudos PCPE/.test(dialogos[0]) && estado.n === 0 && estado.d === '', 'restauração recusa backup de outra versão (' + path.basename(f) + ') sem alterar nada', JSON.stringify(estado));
+    ok(dialogos.length === 1 && /não é um backup da Central de Estudos PCPE/.test(dialogos[0]) && estado.n === 0 && estado.d === '2027-03-07', 'restauração recusa backup de outra versão (' + path.basename(f) + ') sem alterar nada', JSON.stringify(estado));
   }
   dialogos.length = 0;
   await p2.setInputFiles('#modal-backup input[type=file]', arq); await p2.waitForTimeout(1500);

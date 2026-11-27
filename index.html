@@ -1694,7 +1694,7 @@
     versiculoIdx = (versiculoIdx + 1) % versiculos.length;
     atualizarVersiculo();
   }
-  // Data da prova: campo configurável (preferencias.dataProva), vazio por padrão. Sem data, não há contagem.
+  // Data da prova: campo configurável (preferencias.dataProva), começa em DATA_PROVA_PADRAO. Sem data (limpa), não há contagem.
   function dataProva() { const d = preferencias && preferencias.dataProva; return /^\d{4}-\d{2}-\d{2}$/.test(d || '') ? d : ''; }
   function diasParaProva() {
     const iso = dataProva(); if (!iso) return null;
@@ -1822,6 +1822,7 @@
   // >>> EDITAL_DADOS (gerado por tools/gerar-edital.js a partir de edital/conteudo-pcpe.txt; não editar à mão)
   const EDITAL_DADOS = [
     { id: "legislacao_estadual", nome: "Legislação Estadual", linhas: [
+      "1 1 Constituição do Estado de Pernambuco (artigos 101 a 105-B).",
       "1 2 Lei nº 6.425/1972 (Estatuto do Policial Civil).",
       "1 3 Lei nº 6.123/1968 (Estatuto do Servidor de PE).",
       "1 4 Lei Complementar nº 137/2008 (PCCV da PC-PE).",
@@ -1848,6 +1849,8 @@
       "1 11 Segurança pública na Constituição do Estado de Pernambuco."
     ]},
     { id: "administrativo", nome: "Direito Administrativo", linhas: [
+      "1 1 Estado, governo e administração pública.",
+      "1 2 Direito administrativo.",
       "1 3 Ato administrativo.",
       "1 4 Poderes da administração pública.",
       "2 4.1 Hierárquico, disciplinar, regulamentar e de polícia.",
@@ -1864,6 +1867,7 @@
       "2 9.1 Controle administrativo.",
       "2 9.2 Controle judicial.",
       "2 9.3 Controle legislativo.",
+      "2 9.4 Improbidade administrativa.",
       "1 10 Processo administrativo.",
       "1 11 Licitações e contratos administrativos.",
       "1 12 Agente público.",
@@ -1897,7 +1901,8 @@
       "1 17 Violência doméstica contra a criança e o adolescente (Lei nº 14.344/2022).",
       "1 18 Crimes ambientais (Lei nº 9.605/1998).",
       "1 19 Estatuto do Desarmamento (Lei nº 10.826/2003).",
-      "1 20 Estatuto da Juventude (Lei nº 12.852/2013)."
+      "1 20 Estatuto da Juventude (Lei nº 12.852/2013).",
+      "1 21 Disposições constitucionais aplicáveis ao direito penal."
     ]},
     { id: "processual_penal", nome: "Direito Processual Penal", linhas: [
       "1 1 Aplicação da lei processual no tempo, no espaço e em relação às pessoas.",
@@ -1909,6 +1914,7 @@
       "2 3.4 Testemunhas.",
       "2 3.5 Reconhecimento de pessoas e coisas.",
       "2 3.6 Acareação.",
+      "2 3.7 Documentos.",
       "2 3.8 Indícios.",
       "2 3.9 Busca e apreensão.",
       "1 4 Prisão e liberdade provisória.",
@@ -1933,6 +1939,7 @@
       "2 5.5 Concordância verbal e nominal.",
       "2 5.6 Regência verbal e nominal.",
       "2 5.7 Emprego do sinal indicativo de crase.",
+      "2 5.8 Colocação dos pronomes átonos.",
       "1 6 Reescrita de frases e parágrafos do texto.",
       "2 6.1 Significação das palavras.",
       "2 6.2 Substituição de palavras ou de trechos de texto.",
@@ -1948,15 +1955,20 @@
       "1 1 Sistema operacional Windows.",
       "2 1.1 Fundamentos do Windows: janelas, menus, barra de tarefas, área de trabalho.",
       "2 1.2 Pastas e arquivos.",
+      "2 1.3 Configurações básicas do Windows: resolução da tela, cores, fontes, impressoras, aparência, segundo plano, protetor de tela.",
+      "2 1.4 Windows Explorer.",
       "1 2 Microsoft 365.",
       "2 2.1 Word.",
       "3 2.1.1 a 2.1.7 Área de trabalho, formatação, listas e colunas, tabelas, estilos, cabeçalhos e configuração de página.",
       "2 2.2 Excel.",
       "3 2.2.1 a 2.2.6 Interface, fórmulas, funções, formatação, edição e classificação.",
+      "3 2.2.7 Gráficos.",
       "2 2.3 PowerPoint.",
       "3 2.3.1 a 2.3.8 Interface, slides, objetos, listas, tabelas, leiaute, slide mestre e animações.",
+      "3 2.3.9 Integração com Word e Excel.",
       "1 3 Redes de computadores.",
       "2 3.1 Internet, intranet, grupos de discussão, redes sociais, computação na nuvem, navegadores, deep web e dark web.",
+      "2 3.2 Correio eletrônico: endereços, utilização de recursos típicos.",
       "2 3.3 Navegadores e sítios de busca.",
       "2 3.4 Segurança: acessos, programas maliciosos, antivírus e criptografia.",
       "2 3.5 Backup e armazenamento de dados na nuvem."
@@ -1983,7 +1995,8 @@
       "2 11.5 Diagramas lógicos.",
       "1 12 Lógica de primeira ordem.",
       "1 13 Princípios de contagem e probabilidade.",
-      "1 14 Operações com conjuntos."
+      "1 14 Operações com conjuntos.",
+      "1 15 Raciocínio lógico envolvendo problemas aritméticos, geométricos e matriciais."
     ]},
     { id: "contabilidade", nome: "Contabilidade Geral", linhas: [
       "1 1 Conceitos, objetivos e finalidades da contabilidade.",
@@ -2230,7 +2243,10 @@
   let planoDia = {};
   let cadernoErros = [];
   let cronograma = { dias: [], diaAtual: 0, rodada: 1, historico: [] };
-  let preferencias = { duracaoPadrao: 50, dataProva: '' };
+  // Prova objetiva e discursiva do concurso PCPE (Cebraspe): 07/03/2027. Valor inicial; a Izabela pode mudar ou limpar no Painel.
+  // Limpada, fica vazia ("data a definir") e não volta sozinha. A coluna de datas do cronograma do edital veio cortada no PDF: confirmar.
+  const DATA_PROVA_PADRAO = '2027-03-07';
+  let preferencias = { duracaoPadrao: 50, dataProva: DATA_PROVA_PADRAO };
   let expandedNodes = new Set();
 
   function normalizarRevisao(r) {
@@ -2259,7 +2275,7 @@
     planoDia = p.planoDia || {};
     cadernoErros = p.cadernoErros || [];
     cronograma = p.cronograma || { dias: [], diaAtual: 0, rodada: 1, historico: [] };
-    preferencias = Object.assign({ duracaoPadrao: 50, dataProva: '' }, p.preferencias || {});
+    preferencias = Object.assign({ duracaoPadrao: 50, dataProva: DATA_PROVA_PADRAO }, p.preferencias || {});
     versaoDados = Number(p.versaoDados) || 1;
     migracaoEtapa3 = p.migracaoEtapa3 || null;
     if (versaoDados >= VERSAO_DADOS) recalcularTemposDosRegistros();

@@ -931,7 +931,7 @@
   <aside id="barra-lateral" class="lat-barra w-64 bg-panel flex flex-col border-r border-theme shrink-0 z-20">
     <div class="lat-foto p-5 border-b border-theme flex flex-col items-center gap-2.5 text-center">
       <div class="lat-avatar">
-        <img src="perfil.jpg" alt="Foto de perfil" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%231e293b%22/%3E%3Ccircle cx=%2250%22 cy=%2238%22 r=%2217%22 fill=%22%2394a3b8%22/%3E%3Cpath d=%22M16 92c4-22 20-32 34-32s30 10 34 32z%22 fill=%22%2394a3b8%22/%3E%3C/svg%3E';">
+        <img src="img/perfil.png" alt="Brasão da Polícia Civil de Pernambuco" class="logo-fallback" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%231e293b%22/%3E%3Ccircle cx=%2250%22 cy=%2238%22 r=%2217%22 fill=%22%2394a3b8%22/%3E%3Cpath d=%22M16 92c4-22 20-32 34-32s30 10 34 32z%22 fill=%22%2394a3b8%22/%3E%3C/svg%3E';">
       </div>
       <div>
         <h1 class="text-base font-bold tracking-tight">Central de Estudos</h1>
@@ -1812,8 +1812,12 @@
   // =====================================================================
   // 3. EDITAL PCPE (Agente de Polícia, Cebraspe): tópicos de edital/conteudo-pcpe.txt
   // Formato interno: "<nível> <texto>" (o nível vem da numeração do .txt; o gerador faz a conversão)
-  // A CONFIRMAR: fases do edital PCPE (prova discursiva, prova oral do Delegado, exames médicos, capacidade física,
-  //   avaliação psicológica e investigação social). Nada disso foi implementado nem removido; decidir após a confirmação.
+  // FASES CONFIRMADAS (Edital nº 1/2026 PCPE, retificado até o Edital nº 3, item 1.2 e 7.1.1). Cargo de Agente de Polícia:
+  //   1ª etapa: provas objetivas P1 (20 questões, Noções de Direito) e P2 (40 questões, Conhecimentos Específicos);
+  //   prova discursiva P3 (redação, com Atualidades, só aqui); exames médicos; prova de capacidade física;
+  //   investigação social; avaliação psicológica (todas de aprovação obrigatória). 2ª etapa: curso de formação (ACADEPOL).
+  //   A prova oral é só do cargo de Delegado e não vale para o Agente. O app não tem funções para essas fases,
+  //   então não há nada a manter nem a remover no código.
   // =====================================================================
   // >>> EDITAL_DADOS (gerado por tools/gerar-edital.js a partir de edital/conteudo-pcpe.txt; não editar à mão)
   const EDITAL_DADOS = [
@@ -5708,6 +5712,8 @@
     document.getElementById('modal-backup').classList.remove('hidden');
   }
   function fecharModalBackup() { document.getElementById('modal-backup').classList.add('hidden'); }
+  // Identifica os backups desta versão. Arquivos sem esta marca (de outra versão do app ou de origem desconhecida) não são restaurados.
+  const APP_BACKUP = 'Central_Estudos_Izabela_PCPE';
   async function exportarBackup(sufixo = '') {
     const imagens = {};
     for (const e of cadernoErros) {
@@ -5716,7 +5722,7 @@
         if (src) imagens[id] = src;
       }
     }
-    const payload = { app: 'Central_Estudos_Izabela_PCPE', dataExportacao: new Date().toISOString(), ...estadoAtual(), imagens };
+    const payload = { app: APP_BACKUP, dataExportacao: new Date().toISOString(), ...estadoAtual(), imagens };
     baixarArquivo(JSON.stringify(payload), `backup_central_estudos_${hojeISO()}${sufixo}.json`);
   }
   async function importarBackup(event) {
@@ -5730,6 +5736,7 @@
       alert('Erro ao ler o arquivo de backup.');
       return;
     }
+    if (!parsed || parsed.app !== APP_BACKUP) { alert('Este arquivo não é um backup da Central de Estudos PCPE (Agente de Polícia). Ele pode ser de outra versão do app, por isso não foi restaurado. Nada foi alterado.'); return; }
     if (!parsed.dados || !Array.isArray(parsed.dados)) { alert('Arquivo de backup inválido!'); return; }
     const quando = parsed.dataExportacao ? new Date(parsed.dataExportacao).toLocaleString('pt-BR') : 'data desconhecida';
     if (!confirm(`Restaurar o backup de ${quando}?\n\nIsso SUBSTITUI todos os dados atuais deste navegador.\nAntes, será baixada automaticamente uma cópia do estado atual.`)) return;

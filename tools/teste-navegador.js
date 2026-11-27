@@ -46,6 +46,7 @@ async function servirCDNLocal(ctx) {
   ok(/data a definir/.test(ini.contagem) && !/\d+\s*dias/i.test(ini.contagem) && !/faltam/i.test(ini.contagem), 'sem data: "data a definir" e sem contagem', ini.contagem);
 
   ok(await page.evaluate(() => getComputedStyle(document.getElementById('aviso-outra-aba')).display === 'none'), 'aviso de "cronômetro em outra aba" escondido numa aba única');
+  ok(await page.evaluate(() => { const i = document.querySelector('.lat-avatar img'); return i.complete && i.naturalWidth > 0 && /perfil\.png$/.test(i.src); }), 'foto de perfil (brasão) carrega');
   const fotos = await page.evaluate(() => [...document.querySelectorAll('#fi-faixa .fi-foto img')].map(i => i.complete && i.naturalWidth > 0));
   ok(fotos.length === 4 && fotos.every(Boolean), 'as 4 fotos de Minha Força carregam', JSON.stringify(fotos));
 
@@ -160,10 +161,21 @@ async function servirCDNLocal(ctx) {
   const ctx2 = await browser.newContext({ viewport: { width: 390, height: 844 } });
   await servirCDNLocal(ctx2);
   const p2 = await ctx2.newPage(); await p2.goto(URL); await p2.waitForTimeout(500);
-  p2.on('dialog', d => d.accept());
+  const dialogos = []; p2.on('dialog', d => { dialogos.push(d.message()); d.accept(); });
+  // backups de outra versão ou sem marca são recusados, sem confirmação e sem mudar nada
+  const estranho = path.join(os.tmpdir(), 'backup-outra-versao.json'), semMarca = path.join(os.tmpdir(), 'backup-sem-marca.json');
+  fs.writeFileSync(estranho, JSON.stringify({ ...bk, app: ['Central_Estudos_', 'Jess', 'ica_PM', 'PE'].join('') }));
+  const { app: _a, ...resto0 } = bk; fs.writeFileSync(semMarca, JSON.stringify(resto0));
+  for (const f of [estranho, semMarca]) {
+    dialogos.length = 0;
+    await p2.setInputFiles('#modal-backup input[type=file]', f); await p2.waitForTimeout(700);
+    const estado = await p2.evaluate(() => ({ n: registrosEstudo.length, d: preferencias.dataProva }));
+    ok(dialogos.length === 1 && /não é um backup da Central de Estudos PCPE/.test(dialogos[0]) && estado.n === 0 && estado.d === '', 'restauração recusa backup de outra versão (' + path.basename(f) + ') sem alterar nada', JSON.stringify(estado));
+  }
+  dialogos.length = 0;
   await p2.setInputFiles('#modal-backup input[type=file]', arq); await p2.waitForTimeout(1500);
   const rest = await p2.evaluate(() => ({ n: registrosEstudo.length, d: preferencias.dataProva, discs: meusDados.length }));
-  ok(rest.n === 1 && rest.d === futuro && rest.discs === 10, 'restaurar o backup devolve os dados', JSON.stringify(rest));
+  ok(rest.n === 1 && rest.d === futuro && rest.discs === 10 && dialogos.some(m => /Restaurar o backup de/.test(m)), 'restaurar o backup desta versão devolve os dados', JSON.stringify(rest));
 
   ok(erros.length === 0, 'sem erros de JavaScript', erros.slice(0, 3).join(' | '));
   await browser.close();

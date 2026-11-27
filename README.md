@@ -17,8 +17,11 @@ Vazia por padrão. A Izabela define no Painel (campo "Data da prova"). Sem data,
 
 ## Fotos
 - Topo do Painel: `img/painel.jpg`. Faixa lateral: `img/lateral.jpg`. Para trocar, substitua o arquivo mantendo o nome (otimizar antes: JPEG ou WebP, até 1600 px, de preferência abaixo de 200 KB). O véu escuro já está nos dois lugares; `tools/teste-navegador.js` mede o contraste do texto sobre a foto.
-- Foto de perfil: `perfil.jpg` na raiz; sem ela aparece uma silhueta.
+- Foto de perfil: `img/perfil.png` (brasão da Polícia Civil de Pernambuco, fundo transparente); se faltar, aparece uma silhueta.
 - Minha Força & Inspiração: `foto1.jpg` a `foto4.jpg` na raiz (JPEG até 1200 px, sem metadados). Sem os arquivos a seção mostra um aviso.
 
-## A confirmar
-Fases do edital PCPE (prova discursiva, prova oral do Delegado, exames médicos, capacidade física, avaliação psicológica e investigação social): marcador `A CONFIRMAR` no `index.html`. Nada foi implementado nem removido.
+## Fases do concurso (confirmadas no Edital nº 1/2026, retificado até o Edital nº 3)
+Agente de Polícia: provas objetivas (20 questões de Noções de Direito e 40 de Conhecimentos Específicos), prova discursiva (redação, com Atualidades, que só cai nela), exames médicos, prova de capacidade física, investigação social e avaliação psicológica (todas eliminatórias); depois, curso de formação (ACADEPOL). A prova oral é só do cargo de Delegado. O app não tem funções para essas fases.
+
+## Backup
+A restauração só aceita arquivos exportados por esta versão (campo `app` = `Central_Estudos_Izabela_PCPE`); qualquer outro é recusado sem alterar nada.
